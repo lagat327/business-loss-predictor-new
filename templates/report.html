@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+```
+<title>Annual Financial Report</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+    body {
+        font-family: Arial, sans-serif;
+        background: #f4f6f8;
+        margin: 0;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 30px auto;
+        padding: 20px;
+    }
+
+    .header {
+        background: #1f2937;
+        color: white;
+        padding: 30px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+    }
+
+    .header h1 {
+        margin-top: 0;
+    }
+
+    .cards {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .card {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+    }
+
+    .card h3 {
+        margin-top: 0;
+        color: #555;
+    }
+
+    .value {
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    .risk {
+        padding: 25px;
+        border-radius: 10px;
+        background: white;
+        margin-bottom: 20px;
+    }
+
+    .risk-high {
+        color: #b91c1c;
+    }
+
+    .risk-medium {
+        color: #b45309;
+    }
+
+    .risk-low {
+        color: #15803d;
+    }
+
+    .section {
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    .chart-container {
+        position: relative;
+        height: 350px;
+        margin-top: 20px;
+    }
+
+    .two-charts {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .list {
+        padding-left: 20px;
+    }
+
+    .button {
+        display: inline-block;
+        padding: 12px 18px;
+        margin-right: 10px;
+        margin-top: 10px;
+        background: #1f2937;
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+    }
+
+    .button-green {
+        background: #15803d;
+    }
+
+    .button-blue {
+        background: #2563eb;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+
+    th,
+    td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: right;
+    }
+
+    th:first-child,
+    td:first-child {
+        text-align: left;
+    }
+
+    th {
+        background: #1f2937;
+        color: white;
+    }
+
+    @media (max-width: 900px) {
+
+        .cards {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .two-charts {
+            grid-template-columns: 1fr;
+        }
+
+    }
+
+    @media (max-width: 600px) {
+
+        .cards {
+            grid-template-columns: 1fr;
+        }
+
+    }
+
+</style>
+```
+
+</head>
+
+<body>
+
+<div class="container">
+
+```
+<div class="header">
+
+    <h1>Annual Financial Report</h1>
+
+    <h2>{{ business_name }}</h2>
+
+    <p>
+        Financial analysis based on 12 months of business data.
+    </p>
+
+</div>
+
+
+<div class="cards">
+
+    <div class="card">
+
+        <h3>Total Revenue</h3>
+
+        <div class="value">
+            {{ "{:,.2f}".format(total_revenue) }}
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <h3>Total Expenses</h3>
+
+        <div class="value">
+            {{ "{:,.2f}".format(total_expenses) }}
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <h3>Annual Profit</h3>
+
+        <div class="value">
+            {{ "{:,.2f}".format(total_profit) }}
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <h3>Average Margin</h3>
+
+        <div class="value">
+            {{ average_profit_margin }}%
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="risk">
+
+    <h2>Next-Month Loss Prediction</h2>
+
+    {% if risk_level == "High" %}
+
+    <h2 class="risk-high">
+        High Loss Risk
+    </h2>
+
+    {% elif risk_level == "Medium" %}
+
+    <h2 class="risk-medium">
+        Medium Loss Risk
+    </h2>
+
+    {% else %}
+
+    <h2 class="risk-low">
+        Low Loss Risk
+    </h2>
+
+    {% endif %}
+
+    <p>
+        Risk Score:
+        <strong>{{ risk_score }}%</strong>
+    </p>
+
+    {% if prediction == 1 %}
+
+    <p>
+        The machine learning model predicts that the
+        business may operate at a loss next month.
+    </p>
+
+    {% else %}
+
+    <p>
+        The machine learning model predicts that the
+        business is unlikely to operate at a loss next month.
+    </p>
+
+    {% endif %}
+
+</div>
+
+
+<div class="section">
+
+    <h2>Financial Charts</h2>
+
+    <div class="chart-container">
+
+        <canvas id="revenueExpenseChart"></canvas>
+
+    </div>
+
+</div>
+
+
+<div class="two-charts">
+
+    <div class="section">
+
+        <h2>Monthly Profit</h2>
+
+        <div class="chart-container">
+
+            <canvas id="profitChart"></canvas>
+
+        </div>
+
+    </div>
+
+
+    <div class="section">
+
+        <h2>Monthly Cash Flow</h2>
+
+        <div class="chart-container">
+
+            <canvas id="cashFlowChart"></canvas>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="two-charts">
+
+    <div class="section">
+
+        <h2>Monthly Debt</h2>
+
+        <div class="chart-container">
+
+            <canvas id="debtChart"></canvas>
+
+        </div>
+
+    </div>
+
+
+    <div class="section">
+
+        <h2>Profit Margin</h2>
+
+        <div class="chart-container">
+
+            <canvas id="marginChart"></canvas>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="section">
+
+    <h2>Annual Performance</h2>
+
+    <p>
+        <strong>Best Performing Month:</strong>
+        Month {{ best_month.month }}
+        — Profit {{ "{:,.2f}".format(best_month.profit) }}
+    </p>
+
+    <p>
+        <strong>Worst Performing Month:</strong>
+        Month {{ worst_month.month }}
+        — Profit {{ "{:,.2f}".format(worst_month.profit) }}
+    </p>
+
+    <p>
+        <strong>Highest Revenue:</strong>
+        Month {{ highest_revenue_month.month }}
+        — Revenue {{ "{:,.2f}".format(highest_revenue_month.revenue) }}
+    </p>
+
+    <p>
+        <strong>Lowest Revenue:</strong>
+        Month {{ lowest_revenue_month.month }}
+        — Revenue {{ "{:,.2f}".format(lowest_revenue_month.revenue) }}
+    </p>
+
+    <p>
+        <strong>Average Monthly Profit:</strong>
+        {{ "{:,.2f}".format(average_monthly_profit) }}
+    </p>
+
+</div>
+
+
+<div class="section">
+
+    <h2>Risk Factors</h2>
+
+    <ul class="list">
+
+        {% for factor in risk_factors %}
+
+        <li>
+            {{ factor }}
+        </li>
+
+        {% endfor %}
+
+    </ul>
+
+</div>
+
+
+<div class="section">
+
+    <h2>Recommendations</h2>
+
+    <ul class="list">
+
+        {% for recommendation in recommendations %}
+
+        <li>
+            {{ recommendation }}
+        </li>
+
+        {% endfor %}
+
+    </ul>
+
+</div>
+
+
+<div class="section">
+
+    <h2>Monthly Financial Data</h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>Month</th>
+                <th>Revenue</th>
+                <th>Expenses</th>
+                <th>Cost of Goods</th>
+                <th>Cash Flow</th>
+                <th>Debt</th>
+                <th>Profit</th>
+                <th>Margin</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for row in monthly_data %}
+
+            <tr>
+
+                <td>
+                    Month {{ row.month }}
+                </td>
+
+                <td>
+                    {{ "{:,.0f}".format(row.revenue) }}
+                </td>
+
+                <td>
+                    {{ "{:,.0f}".format(row.expenses) }}
+                </td>
+
+                <td>
+                    {{ "{:,.0f}".format(row.cost_of_goods) }}
+                </td>
+
+                <td>
+                    {{ "{:,.0f}".format(row.cash_flow) }}
+                </td>
+
+                <td>
+                    {{ "{:,.0f}".format(row.debt) }}
+                </td>
+
+                <td>
+                    {{ "{:,.0f}".format(row.profit) }}
+                </td>
+
+                <td>
+                    {{ "{:.2f}".format(row.profit_margin) }}%
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+<div class="section">
+
+    <a
+        href="/pdf/{{ request.view_args.business_id }}"
+        class="button button-green"
+    >
+        Download PDF Report
+    </a>
+
+    <a
+        href="/upload"
+        class="button button-blue"
+    >
+        Upload Another Business
+    </a>
+
+    <a
+        href="/"
+        class="button"
+    >
+        Enter Data Manually
+    </a>
+
+</div>
+```
+
+</div>
+
+<script>
+
+const months = [
+    {% for row in monthly_data %}
+    "Month {{ row.month }}"{% if not loop.last %},{% endif %}
+    {% endfor %}
+];
+
+
+const revenue = [
+    {% for row in monthly_data %}
+    {{ row.revenue }}{% if not loop.last %},{% endif %}
+    {% endfor %}
+];
+
+
+const expenses = [
+    {% for row in monthly_data %}
+    {{ row.expenses }}{% if not loop.last %},{% endif %}
+    {% endfor %}
+];
+
+
+const profit = [
+    {% for row in monthly_data %}
+    {{ row.profit }}{% if not loop.last %},{% endif %}
+    {% endfor %}
+];
+
+
+const cashFlow = [
+    {% for row in monthly_data %}
+    {{ row.cash_flow }}{% if not loop.last %},{% endif %}
+    {% endfor %}
+];
+
+
+const debt = [
+    {% for row in monthly_data %}
+    {{ row.debt }}{% if not loop.last %},{% endif %}
+    {% endfor %}
+];
+
+
+const profitMargin = [
+    {% for row in monthly_data %}
+    {{ row.profit_margin }}{% if not loop.last %},{% endif %}
+    {% endfor %}
+];
+
+
+new Chart(
+    document.getElementById(
+        "revenueExpenseChart"
+    ),
+    {
+        type: "line",
+
+        data: {
+            labels: months,
+
+            datasets: [
+
+                {
+                    label: "Revenue",
+                    data: revenue,
+                    tension: 0.3
+                },
+
+                {
+                    label: "Expenses",
+                    data: expenses,
+                    tension: 0.3
+                }
+
+            ]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    }
+);
+
+
+new Chart(
+    document.getElementById(
+        "profitChart"
+    ),
+    {
+        type: "bar",
+
+        data: {
+            labels: months,
+
+            datasets: [
+
+                {
+                    label: "Monthly Profit",
+                    data: profit
+                }
+
+            ]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    }
+);
+
+
+new Chart(
+    document.getElementById(
+        "cashFlowChart"
+    ),
+    {
+        type: "line",
+
+        data: {
+            labels: months,
+
+            datasets: [
+
+                {
+                    label: "Cash Flow",
+                    data: cashFlow,
+                    tension: 0.3
+                }
+
+            ]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    }
+);
+
+
+new Chart(
+    document.getElementById(
+        "debtChart"
+    ),
+    {
+        type: "line",
+
+        data: {
+            labels: months,
+
+            datasets: [
+
+                {
+                    label: "Debt",
+                    data: debt,
+                    tension: 0.3
+                }
+
+            ]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    }
+);
+
+
+new Chart(
+    document.getElementById(
+        "marginChart"
+    ),
+    {
+        type: "line",
+
+        data: {
+            labels: months,
+
+            datasets: [
+
+                {
+                    label: "Profit Margin (%)",
+                    data: profitMargin,
+                    tension: 0.3
+                }
+
+            ]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            scales: {
+
+                y: {
+
+                    beginAtZero: true,
+
+                    ticks: {
+
+                        callback: function(value) {
+
+                            return value + "%";
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+    }
+);
+
+</script>
+
+</body>
+
+</html>
