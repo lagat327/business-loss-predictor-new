@@ -1,4 +1,3 @@
-
 import sqlite3
 import os
 import joblib
@@ -26,11 +25,10 @@ from reportlab.platypus import (
     PageBreak
 )
 
+
 app = Flask("business_loss_predictor")
 
-model = joblib.load(
-    "business_loss_model.pkl"
-)
+model = joblib.load("business_loss_model.pkl")
 
 UPLOAD_FOLDER = "uploads"
 
@@ -40,6 +38,45 @@ os.makedirs(
 )
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
+
+def initialize_database():
+
+    connection = sqlite3.connect("database.db")
+
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS businesses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            business_name TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS financial_data (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            business_id INTEGER NOT NULL,
+            month INTEGER NOT NULL,
+            revenue REAL NOT NULL,
+            expenses REAL NOT NULL,
+            cost_of_goods REAL NOT NULL,
+            cash_flow REAL NOT NULL,
+            inventory REAL NOT NULL,
+            debt REAL NOT NULL,
+            transactions INTEGER NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (business_id) REFERENCES businesses(id)
+        )
+    """)
+
+    connection.commit()
+
+    connection.close()
+
+
+initialize_database()
 
 
 def get_business_id(business_name):
@@ -963,8 +1000,14 @@ def get_report_data(business_id):
         "risk_level": risk_level,
         "prediction": int(prediction),
         "monthly_data": monthly_data,
-        "total_revenue": round(total_revenue, 2),
-        "total_expenses": round(total_expenses, 2),
+        "total_revenue": round(
+            total_revenue,
+            2
+        ),
+        "total_expenses": round(
+            total_expenses,
+            2
+        ),
         "total_cost_of_goods": round(
             total_cost_of_goods,
             2
@@ -1133,14 +1176,12 @@ def download_pdf(business_id):
                 (-1, 0),
                 colors.lightgrey
             ),
-
             (
                 "FONTNAME",
                 (0, 0),
                 (-1, 0),
                 "Helvetica-Bold"
             ),
-
             (
                 "GRID",
                 (0, 0),
@@ -1148,7 +1189,6 @@ def download_pdf(business_id):
                 0.5,
                 colors.grey
             ),
-
             (
                 "PADDING",
                 (0, 0),
@@ -1214,14 +1254,12 @@ def download_pdf(business_id):
                 (-1, 0),
                 colors.lightgrey
             ),
-
             (
                 "FONTNAME",
                 (0, 0),
                 (-1, 0),
                 "Helvetica-Bold"
             ),
-
             (
                 "GRID",
                 (0, 0),
@@ -1229,7 +1267,6 @@ def download_pdf(business_id):
                 0.5,
                 colors.grey
             ),
-
             (
                 "PADDING",
                 (0, 0),
@@ -1406,21 +1443,18 @@ def download_pdf(business_id):
                 (-1, 0),
                 colors.lightgrey
             ),
-
             (
                 "FONTNAME",
                 (0, 0),
                 (-1, 0),
                 "Helvetica-Bold"
             ),
-
             (
                 "FONTSIZE",
                 (0, 0),
                 (-1, -1),
                 7
             ),
-
             (
                 "GRID",
                 (0, 0),
@@ -1428,7 +1462,6 @@ def download_pdf(business_id):
                 0.4,
                 colors.grey
             ),
-
             (
                 "PADDING",
                 (0, 0),
@@ -1490,4 +1523,3 @@ if __name__ == "__main__":
     app.run(
         debug=True
     )
-
