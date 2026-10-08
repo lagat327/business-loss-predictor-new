@@ -1,0 +1,298 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Business Loss Predictor</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            color: #222;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        h2 {
+            margin-top: 30px;
+        }
+
+        .business-name {
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .months {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .month-card {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 18px;
+            background: #fafafa;
+        }
+
+        .month-card h3 {
+            margin-top: 0;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        button,
+        .button {
+            display: inline-block;
+            padding: 12px 20px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        button:hover,
+        .button:hover {
+            background: #555;
+        }
+
+        .upload-button {
+            background: #1f6f43;
+        }
+
+        .upload-button:hover {
+            background: #185a36;
+        }
+
+        .submit-area {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .note {
+            background: #eef4ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 600px) {
+
+            .container {
+                padding: 10px;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <h1>Business Loss Predictor</h1>
+
+        <div class="business-name">
+            Enter 12 months of financial information to generate an annual financial report and predict next-month loss risk.
+        </div>
+
+        <div class="note">
+
+            <strong>Important:</strong>
+
+            Enter the financial information for all 12 months.
+
+            The 12 months will be used to create your annual financial report.
+
+        </div>
+
+        <a href="/upload" class="button upload-button">
+            Upload Excel or CSV Instead
+        </a>
+
+    </div>
+
+    <form method="POST">
+
+        <div class="card">
+
+            <label>
+                Business Name
+            </label>
+
+            <input
+                type="text"
+                name="business_name"
+                placeholder="Enter business name"
+                required
+            >
+
+        </div>
+
+        <div class="card">
+
+            <h2>Monthly Financial Information</h2>
+
+            <div class="months">
+
+                {% for month in range(1, 13) %}
+
+                <div class="month-card">
+
+                    <h3>Month {{ month }}</h3>
+
+                    <label>
+                        Revenue
+                    </label>
+
+                    <input
+                        type="number"
+                        name="revenue{{ month }}"
+                        step="0.01"
+                        min="0"
+                        required
+                    >
+
+                    <label>
+                        Expenses
+                    </label>
+
+                    <input
+                        type="number"
+                        name="expenses{{ month }}"
+                        step="0.01"
+                        min="0"
+                        required
+                    >
+
+                    <label>
+                        Cost of Goods
+                    </label>
+
+                    <input
+                        type="number"
+                        name="cost_of_goods{{ month }}"
+                        step="0.01"
+                        min="0"
+                        required
+                    >
+
+                    <label>
+                        Cash Flow
+                    </label>
+
+                    <input
+                        type="number"
+                        name="cash_flow{{ month }}"
+                        step="0.01"
+                        required
+                    >
+
+                    <label>
+                        Inventory
+                    </label>
+
+                    <input
+                        type="number"
+                        name="inventory{{ month }}"
+                        step="0.01"
+                        min="0"
+                        required
+                    >
+
+                    <label>
+                        Debt
+                    </label>
+
+                    <input
+                        type="number"
+                        name="debt{{ month }}"
+                        step="0.01"
+                        min="0"
+                        required
+                    >
+
+                    <label>
+                        Transactions
+                    </label>
+
+                    <input
+                        type="number"
+                        name="transactions{{ month }}"
+                        step="1"
+                        min="0"
+                        required
+                    >
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            <div class="submit-area">
+
+                <button type="submit">
+                    Save Data and Analyze Business
+                </button>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+
+</html>
